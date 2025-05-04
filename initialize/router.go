@@ -2,15 +2,15 @@ package initialize
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"my-take-out/internal/router"
 )
 
 func routerInit() *gin.Engine {
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+	allRouter := router.AllRouter
+	admin := r.Group("admin")
+	{
+		allRouter.EmployeeRouter.InitApiRouter(admin)
+	}
 	return r
 }

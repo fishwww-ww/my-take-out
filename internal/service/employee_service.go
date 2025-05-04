@@ -1,0 +1,55 @@
+package service
+
+import (
+	"context"
+	"my-take-out/common/e"
+	"my-take-out/common/enum"
+	"my-take-out/common/utils"
+	"my-take-out/global"
+	"my-take-out/internal/api/request"
+	"my-take-out/internal/api/response"
+	"my-take-out/internal/repository/dao"
+)
+
+type IEmployeeService interface {
+	Login(context.Context, request.EmployeeLogin) (*response.EmployeeLogin, error)
+}
+
+type EmployeeImpl struct {
+	repo *dao.EmployeeDao
+}
+
+func (ei *EmployeeImpl) Login(ctx context.Context, employeeLogin request.EmployeeLogin) (*response.EmployeeLogin, error) {
+	employee, err := ei.repo.GetByUserName(ctx, employeeLogin.UserName)
+	if err != nil || employee == nil {
+		return nil, e.Error_ACCOUNT_NOT_FOUND
+	}
+
+	password := utils.MD5V(employeeLogin.Password, "", 0)
+	if password != employee.Password {
+		return nil, e.Error_PASSWORD_ERROR
+	}
+
+	if employee.Status == enum.DISABLE {
+		return nil, e.Error_ACCOUNT_LOCKED
+	}
+
+	jwtConfig := global.Config.Jwt.Admin
+	token, err := utils.GenerateToken(employee.Id, jwtConfig.Name, jwtConfig.Secret)
+	if err != nil {
+		return nil, err
+	}
+	resp := response.EmployeeLogin{
+		Id:       employee.Id,
+		Name:     employee.Name,
+		Token:    token,
+		UserName: employee.Username,
+	}
+	return &resp, nil
+}
+
+// 为什么返回类型是接口？？？
+// EmployeeImpl 是一个结构体类型，它实现了 IEmployeeService 所有接口
+func NewEmployeeService(repo *dao.EmployeeDao) IEmployeeService {
+	return &EmployeeImpl{repo: repo}
+}
