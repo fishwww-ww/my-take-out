@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"my-take-out/common/retcode"
+	"my-take-out/global"
 	"my-take-out/internal/api/request"
 	"my-take-out/internal/service"
 )
@@ -19,17 +20,14 @@ func (ec *EmployeeController) Login(ctx *gin.Context) {
 	employeeLogin := request.EmployeeLogin{}
 	err := ctx.Bind(&employeeLogin)
 	if err != nil {
-		ctx.JSON(400, gin.H{
-			"message": "失败1",
-		})
+		global.Log.Debug("EmployeeController login 解析失败")
+		retcode.Fatal(ctx, err, "")
 		return
 	}
 	resp, err := ec.service.Login(ctx, employeeLogin)
 	if err != nil {
-		ctx.JSON(400, gin.H{
-			"message": "失败2",
-			"error":   err.Error(),
-		})
+		global.Log.Warn("EmployeeController login Error:", err.Error())
+		retcode.Fatal(ctx, err, "")
 		return
 	}
 	retcode.OK(ctx, resp)
@@ -39,12 +37,14 @@ func (ec *EmployeeController) AddEmployee(ctx *gin.Context) {
 	employee := request.EmployeeDTO{}
 	err := ctx.Bind(&employee)
 	if err != nil {
-		retcode.Fatal(ctx, err, "失败1")
+		global.Log.Debug("AddEmployee Error:", err.Error())
+		retcode.Fatal(ctx, err, "")
 		return
 	}
 	err = ec.service.CreateEmployee(ctx, employee)
 	if err != nil {
-		retcode.Fatal(ctx, err, "失败2")
+		global.Log.Warn("AddEmployee Error", err.Error())
+		retcode.Fatal(ctx, err, "")
 		return
 	}
 	retcode.OK(ctx, "")
