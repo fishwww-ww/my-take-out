@@ -37,6 +37,7 @@ type AllConfig struct {
 	Server     Server
 	DataSource DataSource
 	Jwt        Jwt
+	Log        Log
 }
 
 type Server struct {
@@ -55,6 +56,11 @@ type DataSource struct {
 type Jwt struct {
 	Admin JwtOption
 	User  JwtOption
+}
+
+type Log struct {
+	Level    string
+	FilePath string
 }
 
 type JwtOption struct {
