@@ -2,6 +2,7 @@ package e
 
 const (
 	SUCCESS         = 1
+	ERROR           = 2
 	UNKNOW_IDENTITY = 403
 	MysqlERR        = 1001
 )
