@@ -11,18 +11,18 @@ datasource:
   dbname: db1
   config: charset=utf8mb4&parseTime=True&loc=Local
 
-  jwt:
-    admin:
-      # 设置jwt签名加密时使用的秘钥
-      secret: admin
-      # 设置jwt过期时间
-      ttl: 7200000
-      # 设置前端传递过来的令牌名称
-      name: token
-    user:
-      # 设置jwt签名加密时使用的秘钥
-      secret: user
-      # 设置jwt过期时间
-      ttl: 7200000
-      # 设置前端传递过来的令牌名称
-      name: Authorization
+jwt:
+  admin:
+    # 设置jwt签名加密时使用的秘钥
+    secret: admin
+    # 设置jwt过期时间
+    ttl: 7200000
+    # 设置前端传递过来的令牌名称
+    name: token
+  user:
+    # 设置jwt签名加密时使用的秘钥
+    secret: user
+    # 设置jwt过期时间
+    ttl: 7200000
+    # 设置前端传递过来的令牌名称
+    name: Authorization

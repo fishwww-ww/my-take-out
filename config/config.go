@@ -30,8 +30,6 @@ func InitLoadConfig() *AllConfig {
 	if err != nil {
 		panic(fmt.Errorf("read config file to struct err: %s\n", err))
 	}
-	// 打印配置文件信息
-	fmt.Printf("配置文件信息：%+v", configData)
 	return configData
 }
 
