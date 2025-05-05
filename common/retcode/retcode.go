@@ -1,5 +1,16 @@
 package retcode
 
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/go-sql-driver/mysql"
+	"my-take-out/common/e"
+	"net/http"
+)
+
+type ErrorCodeGetter interface {
+	GetCode() int
+}
+
 type Error struct {
 	ErrCode int
 	ErrMsg  string
@@ -14,4 +25,47 @@ func NewError(code int, msg string) *Error {
 		ErrCode: code,
 		ErrMsg:  msg,
 	}
+}
+
+func OK(c *gin.Context, output interface{}) {
+	RenderReply(c, output)
+}
+
+func RenderReply(c *gin.Context, data interface{}) {
+	render(c, e.SUCCESS, data, nil)
+}
+
+func render(c *gin.Context, code int, data interface{}, err error) {
+	var msg string
+	if err != nil {
+		msg = err.Error()
+		if code == e.UNKNOW_IDENTITY {
+			code = GetErrCode(err)
+		}
+	} else if defaultMsg, ok := e.ErrMsg[code]; ok {
+		msg = defaultMsg
+	}
+
+	r := gin.H{
+		"code": code,
+		"msg":  msg,
+		"data": data,
+	}
+	c.Set("return_code", code)
+	c.JSON(http.StatusOK, r)
+}
+
+func GetErrCode(err error) int {
+	if errGetter, ok := err.(ErrorCodeGetter); ok {
+		return errGetter.GetCode()
+	}
+
+	switch errType := err.(type) {
+	case *mysql.MySQLError:
+		return int(errType.Number)
+	case *Error:
+		return errType.ErrCode
+	}
+
+	return e.UNKNOW_IDENTITY
 }
