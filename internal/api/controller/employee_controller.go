@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"my-take-out/common/retcode"
 	"my-take-out/internal/api/request"
 	"my-take-out/internal/service"
 )
@@ -31,5 +32,5 @@ func (ec *EmployeeController) Login(ctx *gin.Context) {
 		})
 		return
 	}
-	ctx.JSON(200, resp)
+	retcode.OK(ctx, resp)
 }
