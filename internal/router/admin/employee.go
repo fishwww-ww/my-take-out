@@ -6,6 +6,7 @@ import (
 	"my-take-out/internal/api/controller"
 	"my-take-out/internal/repository/dao"
 	"my-take-out/internal/service"
+	"my-take-out/middle"
 )
 
 type EmployeeRouter struct {
@@ -14,12 +15,16 @@ type EmployeeRouter struct {
 
 func (er *EmployeeRouter) InitApiRouter(router *gin.RouterGroup) {
 	publicRouter := router.Group("employee")
+	privateRouter := router.Group("employee")
+
+	privateRouter.Use(middle.VerifyJWTAdmin())
+
 	er.service = service.NewEmployeeService(
 		dao.NewEmployeeDao(global.DB),
 	)
 	employeeCtl := controller.NewEmployeeController(er.service)
 	{
 		publicRouter.POST("/login", employeeCtl.Login)
-		publicRouter.POST("", employeeCtl.AddEmployee)
+		privateRouter.POST("", employeeCtl.AddEmployee)
 	}
 }
