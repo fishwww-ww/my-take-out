@@ -34,3 +34,18 @@ func (ec *EmployeeController) Login(ctx *gin.Context) {
 	}
 	retcode.OK(ctx, resp)
 }
+
+func (ec *EmployeeController) AddEmployee(ctx *gin.Context) {
+	employee := request.EmployeeDTO{}
+	err := ctx.Bind(&employee)
+	if err != nil {
+		retcode.Fatal(ctx, err, "失败1")
+		return
+	}
+	err = ec.service.CreateEmployee(ctx, employee)
+	if err != nil {
+		retcode.Fatal(ctx, err, "失败2")
+		return
+	}
+	retcode.OK(ctx, "")
+}

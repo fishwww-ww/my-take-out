@@ -20,5 +20,6 @@ func (er *EmployeeRouter) InitApiRouter(router *gin.RouterGroup) {
 	employeeCtl := controller.NewEmployeeController(er.service)
 	{
 		publicRouter.POST("/login", employeeCtl.Login)
+		publicRouter.POST("", employeeCtl.AddEmployee)
 	}
 }

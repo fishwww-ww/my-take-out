@@ -8,11 +8,14 @@ import (
 	"my-take-out/global"
 	"my-take-out/internal/api/request"
 	"my-take-out/internal/api/response"
+	"my-take-out/internal/model"
 	"my-take-out/internal/repository/dao"
+	"time"
 )
 
 type IEmployeeService interface {
 	Login(context.Context, request.EmployeeLogin) (*response.EmployeeLogin, error)
+	CreateEmployee(context.Context, request.EmployeeDTO) error
 }
 
 type EmployeeImpl struct {
@@ -46,6 +49,31 @@ func (ei *EmployeeImpl) Login(ctx context.Context, employeeLogin request.Employe
 		UserName: employee.Username,
 	}
 	return &resp, nil
+}
+
+func (ei *EmployeeImpl) CreateEmployee(ctx context.Context, employeeDTO request.EmployeeDTO) error {
+	//// 校验用户名是否存在
+	//employee, err := ei.repo.GetByUserName(ctx, employeeDTO.UserName)
+	//if err != nil {
+	//	return err
+	//}
+	//if employee != nil {
+	//	return e.Error_ACCOUNT_EXIST
+	//}
+	entity := model.Employee{
+		Id:         employeeDTO.Id,
+		Name:       employeeDTO.Name,
+		Username:   employeeDTO.UserName,
+		Password:   utils.MD5V("123456", "", 0),
+		Phone:      employeeDTO.Phone,
+		Sex:        employeeDTO.Sex,
+		IdNumber:   employeeDTO.IdNumber,
+		Status:     enum.ENABLE,
+		CreateTime: time.Now(),
+		UpdateTime: time.Now(),
+	}
+	err := ei.repo.Insert(ctx, entity)
+	return err
 }
 
 // 为什么返回类型是接口？？？

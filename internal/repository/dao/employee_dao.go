@@ -24,3 +24,11 @@ func (d *EmployeeDao) GetByUserName(ctx context.Context, username string) (*mode
 	}
 	return &employee, err
 }
+
+func (d *EmployeeDao) Insert(ctx context.Context, entity model.Employee) error {
+	err := d.db.WithContext(ctx).Create(&entity).Error
+	if err != nil {
+		return retcode.NewError(e.MysqlERR, "Insert employee failed")
+	}
+	return nil
+}
