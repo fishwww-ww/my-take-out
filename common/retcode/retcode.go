@@ -1,6 +1,8 @@
 package retcode
 
 import (
+	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"my-take-out/common/e"
@@ -68,4 +70,17 @@ func GetErrCode(err error) int {
 	}
 
 	return e.UNKNOW_IDENTITY
+}
+
+func Fatal(c *gin.Context, e error, msg string) {
+	code := GetErrCode(e)
+	fmt.Printf("%s %+v", msg, e)
+	if msg == "" {
+		msg = e.Error()
+	}
+	RenderErrMsg(c, code, msg)
+}
+
+func RenderErrMsg(c *gin.Context, code int, msg string) {
+	render(c, code, nil, errors.New(msg))
 }
