@@ -11,6 +11,7 @@ func GlobalInit() *gin.Engine {
 	global.Config = config.InitLoadConfig()
 	global.Log = logger.NewMySLog(global.Config.Log.Level, global.Config.Log.FilePath)
 	global.DB = InitDatabase(global.Config.DataSource.Dsn())
+	global.Redis = initRedis()
 	router := routerInit()
 	return router
 }

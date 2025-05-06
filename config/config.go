@@ -38,6 +38,7 @@ type AllConfig struct {
 	DataSource DataSource
 	Jwt        Jwt
 	Log        Log
+	Redis      Redis
 }
 
 type Server struct {
@@ -61,6 +62,13 @@ type Jwt struct {
 type Log struct {
 	Level    string
 	FilePath string
+}
+
+type Redis struct {
+	Host     string
+	Port     string
+	Password string
+	DataBase int `mapstructure:"data_base"`
 }
 
 type JwtOption struct {
