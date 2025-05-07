@@ -34,7 +34,7 @@ services:
     container_name: gin-server
     build:
       context: ./
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
     restart: always
     volumes:
       # 这个共享卷是用来存放配置文件。
