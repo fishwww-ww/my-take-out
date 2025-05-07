@@ -38,19 +38,25 @@
 ## 启动服务器
 #CMD ["/app/gin-server"]
 
-# 编译阶段
+# 构建阶段：使用中国镜像源加速
 FROM golang:1.21.0 AS builder
 
 WORKDIR /build
 
-# 设置Go环境变量（替代 go env -w）
+# 设置中国区Go代理 + 编译环境
 ENV GOPROXY=https://goproxy.cn,direct \
+    GOSUMDB=sum.golang.google.cn \
     GO111MODULE=on \
     CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64
 
-# 先只复制依赖文件（利用缓存层）
+# 使用阿里云Docker镜像加速（构建阶段）
+RUN echo "https://registry.cn-hangzhou.aliyuncs.com" > /etc/containerd/config.toml && \
+    mkdir -p /etc/docker && \
+    echo '{"registry-mirrors": ["https://registry.cn-hangzhou.aliyuncs.com"]}' > /etc/docker/daemon.json
+
+# 先复制依赖文件（利用缓存层）
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -58,33 +64,31 @@ RUN go mod download
 COPY . .
 RUN go build -o /app/gin-server .
 
-# 运行阶段
-FROM alpine:3.18
+# 运行阶段：使用中国镜像源
+FROM registry.cn-hangzhou.aliyuncs.com/library/alpine:3.18
 
 WORKDIR /app
 
-# 安装时区数据
+# 配置中国时区（阿里云镜像）
 RUN apk add --no-cache tzdata && \
     cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
     echo "Asia/Shanghai" > /etc/timezone && \
     apk del tzdata
 
-# 创建非root用户
+# 安全设置：非root用户
 RUN adduser -D -g '' appuser && \
     chown -R appuser:appuser /app
 
-# 从构建阶段复制二进制文件
+# 复制二进制文件
 COPY --from=builder --chown=appuser:appuser /app/gin-server /app/gin-server
 
-# 创建日志目录（权限给非root用户）
+# 日志目录
 RUN mkdir /app/logger && \
     chown appuser:appuser /app/logger
 
 # 环境变量
 ENV TZ="Asia/Shanghai"
 
-# 切换到非root用户
 USER appuser
-
 EXPOSE 8080
 CMD ["/app/gin-server"]
