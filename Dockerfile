@@ -1,5 +1,5 @@
 # 编译阶段：引用最小编译环境
-FROM golang:1.21.0 AS builder
+FROM docker.xuanyuan.me/golang:1.21.0 AS builder
 
 # 镜像默认工作目录
 WORKDIR /build
@@ -19,7 +19,7 @@ COPY . .
 RUN GOOS=linux CGO_ENABLED=0 GOARCH=amd64  go build -o /app/gin-server .
 
 # 构建阶段：使用 alpine 最小构建
-FROM alpine
+FROM docker.xuanyuan.me/alpine
 
 # 设置镜像工作目录
 WORKDIR /app
