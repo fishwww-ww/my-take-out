@@ -1,5 +1,5 @@
 # 编译阶段：引用最小编译环境
-FROM docker.xuanyuan.me/golang:1.21.0 AS builder
+FROM docker.xuanyuan.me/golang:1.23.6 AS builder
 
 # 镜像默认工作目录
 WORKDIR /build
