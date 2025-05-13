@@ -49,3 +49,21 @@ func (ec *EmployeeController) AddEmployee(ctx *gin.Context) {
 	}
 	retcode.OK(ctx, "")
 }
+
+func (ec *EmployeeController) PageQuery(ctx *gin.Context) {
+	var employeePageQueryDTO request.EmployeePageQueryDTO
+	err := ctx.Bind(&employeePageQueryDTO)
+	if err != nil {
+		global.Log.Error("AddEmployee  invalid params err:", err.Error())
+		retcode.Fatal(ctx, err, "")
+		return
+	}
+	// 进行分页查询
+	pageResult, err := ec.service.PageQuery(ctx, employeePageQueryDTO)
+	if err != nil {
+		global.Log.Warn("AddEmployee  Error:", err.Error())
+		retcode.Fatal(ctx, err, "")
+		return
+	}
+	retcode.OK(ctx, pageResult)
+}

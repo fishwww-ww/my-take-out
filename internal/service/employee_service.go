@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"my-take-out/common"
 	"my-take-out/common/e"
 	"my-take-out/common/enum"
 	"my-take-out/common/utils"
@@ -16,6 +17,7 @@ import (
 type IEmployeeService interface {
 	Login(context.Context, request.EmployeeLogin) (*response.EmployeeLogin, error)
 	CreateEmployee(context.Context, request.EmployeeDTO) error
+	PageQuery(ctx context.Context, query request.EmployeePageQueryDTO) (*common.PageResult, error)
 }
 
 type EmployeeImpl struct {
@@ -74,6 +76,19 @@ func (ei *EmployeeImpl) CreateEmployee(ctx context.Context, employeeDTO request.
 	}
 	err := ei.repo.Insert(ctx, entity)
 	return err
+}
+
+func (ei *EmployeeImpl) PageQuery(ctx context.Context, dto request.EmployeePageQueryDTO) (*common.PageResult, error) {
+	pageResult, err := ei.repo.PageQuery(ctx, dto)
+	if employees, ok := pageResult.Records.([]model.Employee); ok {
+		for key, _ := range employees {
+			employees[key].Password = "****"
+			employees[key].IdNumber = "****"
+			employees[key].Phone = "****"
+		}
+		pageResult.Records = employees
+	}
+	return pageResult, err
 }
 
 // 为什么返回类型是接口？？？

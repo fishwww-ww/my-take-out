@@ -5,6 +5,12 @@ type EmployeeLogin struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type EmployeePageQueryDTO struct {
+	Page     int    `json:"page"`     //页数
+	PageSize int    `json:"pageSize"` //每页容量
+	Name     string `json:"name"`
+}
+
 type EmployeeDTO struct {
 	Id       uint64 `json:"id"`                          //员工id
 	IdNumber string `json:"idNumber" binding:"required"` //身份证
