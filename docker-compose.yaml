@@ -9,6 +9,11 @@ services:
     #      - /data/redis/data:/data
     ports:
       - '6379:6379'
+    healthcheck:
+      test: [ "CMD", "mysql", "-uroot", "-p123456", "-e", "SELECT 1" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
   mysql:
     image: mysql
@@ -28,7 +33,12 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-    #    restart: always
+#    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
     volumes:
       # 宿主机的配置文件挂载
       - ./config/application-dev.yaml:/app/config/application-dev.yaml
