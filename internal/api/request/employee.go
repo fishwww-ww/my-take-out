@@ -6,9 +6,9 @@ type EmployeeLogin struct {
 }
 
 type EmployeePageQueryDTO struct {
-	Page     int    `json:"page"`     //页数
-	PageSize int    `json:"pageSize"` //每页容量
-	Name     string `json:"name"`
+	Page     int    `json:"page" form:"page"`         //页数
+	PageSize int    `json:"pageSize" form:"pageSize"` //每页容量
+	Name     string `json:"name" form:"name"`
 }
 
 type EmployeeDTO struct {

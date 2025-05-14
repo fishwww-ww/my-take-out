@@ -80,14 +80,15 @@ func (ei *EmployeeImpl) CreateEmployee(ctx context.Context, employeeDTO request.
 
 func (ei *EmployeeImpl) PageQuery(ctx context.Context, dto request.EmployeePageQueryDTO) (*common.PageResult, error) {
 	pageResult, err := ei.repo.PageQuery(ctx, dto)
-	if employees, ok := pageResult.Records.([]model.Employee); ok {
-		for key, _ := range employees {
-			employees[key].Password = "****"
-			employees[key].IdNumber = "****"
-			employees[key].Phone = "****"
-		}
-		pageResult.Records = employees
-	}
+	// 防止信息泄露
+	//if employees, ok := pageResult.Records.([]model.Employee); ok {
+	//	for key, _ := range employees {
+	//		employees[key].Password = "****"
+	//		employees[key].IdNumber = "****"
+	//		employees[key].Phone = "****"
+	//	}
+	//	pageResult.Records = employees
+	//}
 	return pageResult, err
 }
 
