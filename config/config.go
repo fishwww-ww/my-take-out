@@ -39,6 +39,7 @@ type AllConfig struct {
 	Jwt        Jwt
 	Log        Log
 	Redis      Redis
+	AliOss     AliOss
 }
 
 type Server struct {
@@ -75,6 +76,13 @@ type JwtOption struct {
 	Secret string
 	TTL    string
 	Name   string
+}
+
+type AliOss struct {
+	EndPoint        string
+	AccessKeyId     string `mapstructure:"access_key_id"`
+	AccessKeySecret string `mapstructure:"access_key_secret"`
+	BucketName      string `mapstructure:"bucket_name"`
 }
 
 func (d *DataSource) Dsn() string {
