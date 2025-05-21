@@ -20,7 +20,7 @@ func (er *EmployeeRouter) InitApiRouter(router *gin.RouterGroup) {
 	privateRouter.Use(middle.VerifyJWTAdmin())
 
 	er.service = service.NewEmployeeService(
-		dao.NewEmployeeDao(global.DB),
+		dao.NewEmployeeDao(global.DB, global.Redis),
 	)
 	employeeCtl := controller.NewEmployeeController(er.service)
 	{

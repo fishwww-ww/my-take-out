@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"github.com/gin-gonic/gin"
 	"my-take-out/common"
 	"my-take-out/common/e"
 	"my-take-out/common/enum"
@@ -79,7 +81,13 @@ func (ei *EmployeeImpl) CreateEmployee(ctx context.Context, employeeDTO request.
 }
 
 func (ei *EmployeeImpl) PageQuery(ctx context.Context, dto request.EmployeePageQueryDTO) (*common.PageResult, error) {
-	pageResult, err := ei.repo.PageQuery(ctx, dto)
+	// 将 context.Context 转换为 *gin.Context
+	ginCtx, ok := ctx.(*gin.Context)
+	if !ok {
+		return nil, fmt.Errorf("failed to convert context to *gin.Context")
+	}
+
+	pageResult, err := ei.repo.PageQuery(ginCtx, dto)
 	// 防止信息泄露
 	//if employees, ok := pageResult.Records.([]model.Employee); ok {
 	//	for key, _ := range employees {
