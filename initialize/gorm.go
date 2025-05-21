@@ -52,5 +52,31 @@ func InitDatabase(dsn string) *gorm.DB {
 		log.Fatalf("自动建表失败: %v", err)
 	}
 	log.Println("表创建成功")
+	initAdminUser(db)
 	return db
+}
+
+// 初始化管理员用户
+func initAdminUser(db *gorm.DB) {
+	admin := model.Employee{
+		Username: "admin",
+		Password: "e10adc3949ba59abbe56e057f20f883e", // 123456 的 MD5
+		Status:   1,
+	}
+
+	// 使用 FirstOrCreate 避免重复创建
+	result := db.Where(model.Employee{Username: admin.Username}).
+		Attrs(model.Employee{
+			Password: admin.Password,
+			Status:   admin.Status,
+		}).
+		FirstOrCreate(&admin)
+
+	if result.Error != nil {
+		log.Printf("初始化管理员用户失败: %v", result.Error)
+	} else if result.RowsAffected > 0 {
+		log.Println("管理员用户创建成功")
+	} else {
+		log.Println("管理员用户已存在")
+	}
 }
