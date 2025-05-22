@@ -23,3 +23,13 @@ func (d *CommonDao) Insert(ctx context.Context, entity model.File) error {
 	}
 	return nil
 }
+
+func (d *CommonDao) Query(ctx context.Context, fileName string) (string, error) {
+	// 查询数据库中filename字段为fileName的记录
+	var file model.File
+	err := d.db.WithContext(ctx).Where("name = ?", fileName).First(&file).Error
+	if err != nil {
+		return "", retcode.NewError(e.MysqlERR, "Query file failed")
+	}
+	return file.Uuid, nil
+}

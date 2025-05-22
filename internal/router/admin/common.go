@@ -21,5 +21,6 @@ func (dr *CommonRouter) InitApiRouter(parent *gin.RouterGroup) {
 	commonCtrl := new(controller.CommonController)
 	{
 		privateRouter.POST("upload", commonCtrl.Upload)
+		privateRouter.GET("download", commonCtrl.Download)
 	}
 }
