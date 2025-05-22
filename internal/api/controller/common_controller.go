@@ -6,9 +6,13 @@ import (
 	"my-take-out/common/retcode"
 	"my-take-out/common/utils"
 	"my-take-out/global"
+	"my-take-out/internal/model"
+	"my-take-out/internal/service"
 )
 
-type CommonController struct{}
+type CommonController struct {
+	service service.ICommonService
+}
 
 func (cc *CommonController) Upload(ctx *gin.Context) {
 	file, err := ctx.FormFile("file")
@@ -17,6 +21,16 @@ func (cc *CommonController) Upload(ctx *gin.Context) {
 	}
 	uuid := uuid.New()
 	imageName := uuid.String() + file.Filename
+	fileInfo := model.File{
+		Uuid: uuid.String(),
+		Name: file.Filename,
+	}
+	err = cc.service.Insert(ctx, fileInfo)
+	if err != nil {
+		global.Log.Error(err)
+		retcode.Fatal(ctx, err, "")
+		return
+	}
 	imagePath, err := utils.AliyunOss(imageName, file)
 	if err != nil {
 		global.Log.Warn("AliyunOss upload failed", "err", err.Error())
